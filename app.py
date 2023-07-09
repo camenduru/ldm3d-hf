@@ -11,14 +11,14 @@ Path("tmp").mkdir(exist_ok=True)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Device is {device}")
-device = "cpu"
 pipe = StableDiffusionLDM3DPipeline.from_pretrained(
     "Intel/ldm3d-4c",
     torch_dtype=torch.float16
     # , safety_checker=None
 )
 pipe.to(device)
-pipe.enable_xformers_memory_efficient_attention()
+if device == "cuda":
+    pipe.enable_xformers_memory_efficient_attention()
 pipe.enable_model_cpu_offload()
 
 
