@@ -19,7 +19,7 @@ pipe = StableDiffusionLDM3DPipeline.from_pretrained(
 pipe.to(device)
 if device == "cuda":
     pipe.enable_xformers_memory_efficient_attention()
-pipe.enable_model_cpu_offload()
+    pipe.enable_model_cpu_offload()
 
 
 def get_iframe(rgb_path: str, depth_path: str, viewer_mode: str = "6DOF"):
