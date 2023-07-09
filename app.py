@@ -16,7 +16,8 @@ pipe = StableDiffusionLDM3DPipeline.from_pretrained(
     # , safety_checker=None
 )
 pipe.to(device)
-pipe.enable_xformers_memory_efficient_attention()
+if device == "cuda":
+    pipe.enable_xformers_memory_efficient_attention()
 pipe.enable_model_cpu_offload()
 
 
