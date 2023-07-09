@@ -1,0 +1,9 @@
+git+https://github.com/huggingface/diffusers@07c9a08e67feb4d05ba22ba6b1a2d39468d68225
+gradio
+transformers
+accelerate
+Pillow
+numpy
+xformers
+# --index-url https://download.pytorch.org/whl/cu118
+torch

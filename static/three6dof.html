@@ -1,0 +1,180 @@
+<html>
+
+<head>
+    <title>THREE.6DOF - Image Viewer Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            font-family: georgia;
+            text-align: center;
+        }
+
+        a {
+            color: skyblue;
+            text-decoration: none
+        }
+
+        video {
+            display: none;
+        }
+
+        #info {
+            position: absolute;
+            top: 15px;
+            width: 100%;
+        }
+
+        #info_wrapper {
+            background: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="public/images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="public/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="public/images/favicon/favicon-16x16.png">
+    <link rel="manifest" href="public/site.webmanifest">
+
+    <!-- Libraries -->
+    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+    <!-- <script src="public/js/WebVR.js"></script> -->
+    <script src="public/js/GUIHelper.js"></script>
+
+    <!-- THREE-6DOF -->
+    <script src="public/js/three-6dof.min.js"></script>
+</head>
+
+<body>
+    <script>
+        'use strict';
+        // get data-rgb from parent iframe tag
+        var rgbBase64Img = window.frameElement?.getAttribute('data-rgb');
+        var depthBase64Img = window.frameElement?.getAttribute('data-depth');
+
+        // debug GUI
+        var gui = new dat.GUI({ closed: true, closeOnTop: true });
+
+        // We will create the viewer once the textures are loaded
+        var sixDofViewer;
+
+        // Keep track of time
+        var clock = new THREE.Clock();
+
+        let enableAnimation = true;
+        // Create the scene, renderer and camera
+        var scene = new THREE.Scene();
+        const w = 1024
+        const h = 512
+        var renderer = new THREE.WebGLRenderer({ antialias: true });
+        // renderer.setSize(w, h); //window.innerWidth, window.innerHeight);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        // renderer.vr.enabled = true;
+        document.body.appendChild(renderer.domElement);
+        // document.body.appendChild(THREE.WEBVR.createButton(renderer));
+
+        var camera = new THREE.PerspectiveCamera(55, w / h, 0.001, 1000);
+        var cameraDolly = new THREE.Object3D(); // We use a camera dolly since WebVR/XR will override camera transform
+        cameraDolly.position.y = -1.7;
+
+        cameraDolly.add(camera);
+        scene.add(cameraDolly);
+
+
+        var loadingManager = new THREE.LoadingManager();
+        var textureLoader = new THREE.TextureLoader(loadingManager);
+
+        // Load the textures and store them
+        var colorTexture, depthTexture;
+        // three.js load texture from base64
+        if (rgbBase64Img && depthBase64Img) {
+
+            textureLoader.load(rgbBase64Img, texture => { colorTexture = texture });
+            textureLoader.load(depthBase64Img, texture => { depthTexture = texture });
+        } else {
+            textureLoader.load('public/images/equirectangular/kandao3.jpg', texture => { colorTexture = texture });
+            textureLoader.load('public/images/equirectangular/kandao3_depthmap.jpg', texture => { depthTexture = texture });
+        }
+
+        // On finish loading create the viewer with the textures
+        loadingManager.onLoad = () => {
+            sixDofViewer = new SixDOF.Viewer(colorTexture, depthTexture,
+                {
+                    'type': SixDOF.TextureType.SEPERATE, // For seperate depth and texture (for single top bottom use TextureType.TOP_BOTTOM)
+                    'style': SixDOF.Style.MESH, // Chooses the rendering style (defaults to Style.MESH)
+                    'density': SixDOF.MeshDensity.EXTRA_HIGH, // Chooses geometry tesselation level
+                    'displacement': 4.0, // Defaults to 4.0
+                    'radius': 6 // Defaults to 6
+                })
+            scene.add(sixDofViewer);
+
+            // Create the debug GUI and add some debug params
+            var shaderParams = gui.addFolder('Shader');
+            shaderParams.add(sixDofViewer, 'displacement', 0, 7).name('Displacement');
+            shaderParams.add(sixDofViewer, 'opacity', 0, 1).name('Opacity');
+            shaderParams.add(sixDofViewer, 'pointSize', 0, 10).name('Point Size');
+            shaderParams.add(camera, 'fov', 1, 100).name('Camera FOV').onChange(val => {
+                camera.updateProjectionMatrix();
+            });
+            shaderParams.add(camera.position, 'x', -10, 10).name('Camera X');
+            shaderParams.add(camera.position, 'y', -10, 10).name('Camera Y');
+            shaderParams.add(camera.position, 'z', -10, 10).name('Camera Z');
+
+            shaderParams.add({ 'debugDepth': false }, 'debugDepth')
+                .name('Debug Depth')
+                .onChange(val => {
+                    sixDofViewer.toggleDepthDebug(val);
+                });
+            shaderParams.add({
+                'changeStyle': () => { }
+            }, 'changeStyle', {
+                'Mesh': SixDOF.Style[SixDOF.Style.MESH],
+                'Wireframe': SixDOF.Style[SixDOF.Style.WIRE],
+                'Pointcloud': SixDOF.Style[SixDOF.Style.POINTS]
+            })
+                .name('Rendering Style')
+                .onChange(val => {
+                    scene.remove(sixDofViewer);
+                    sixDofViewer = new SixDOF.Viewer(colorTexture, depthTexture, {
+                        'style': SixDOF.Style[val]
+                    });
+                    scene.add(sixDofViewer);
+                });
+
+            shaderParams.open();
+        }
+        const controls = new THREE.OrbitControls(cameraDolly, renderer.domElement);
+        controls.enableZoom = true
+        controls.enableDamping = true;
+        camera.rotation.x = Math.PI / 2;
+
+        controls.autoRotate = true;
+        controls.addEventListener('start', function () {
+            controls.autoRotate = false;
+        });
+
+
+        renderer.setAnimationLoop((time) => {
+
+            controls.update();
+            renderer.render(scene, camera);
+        });
+
+
+
+        window.addEventListener('resize', ev => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+
+</html>
