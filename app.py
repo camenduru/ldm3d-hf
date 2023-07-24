@@ -50,7 +50,7 @@ def predict(
 ):
     generator = torch.Generator() if randomize_seed else torch.manual_seed(seed)
     output = pipe(
-        prompt,
+        "panoramic view of " + prompt,
         width=1024,
         height=512,
         negative_prompt=negative_prompt,
