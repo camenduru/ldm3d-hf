@@ -75,7 +75,7 @@ with gr.Blocks() as block:
         """
 ## LDM3d Demo 
 
-model: https://huggingface.co/Intel/ldm3d<br>
+Model card: https://huggingface.co/Intel/ldm3d<br>
 [Diffusers docs](https://huggingface.co/docs/diffusers/main/en/api/pipelines/stable_diffusion/ldm3d_diffusion)
 
 """
