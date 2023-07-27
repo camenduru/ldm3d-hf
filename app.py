@@ -114,3 +114,4 @@ Model card: https://huggingface.co/Intel/ldm3d-pano<br>
     )
 
 block.launch()
+
