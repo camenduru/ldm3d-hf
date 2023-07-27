@@ -112,4 +112,5 @@ Model card: https://huggingface.co/Intel/ldm3d-pano<br>
         inputs=[prompt, negative_prompt, guidance_scale, seed, randomize_seed],
         outputs=[rgb, depth, generated_seed, html],
     )
+    
 block.launch()
