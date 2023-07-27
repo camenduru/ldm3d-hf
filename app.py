@@ -56,7 +56,7 @@ def predict(
         negative_prompt=negative_prompt,
         guidance_scale=guidance_scale,
         generator=generator,
-        num_inference_steps=40,
+        num_inference_steps=50,
     )  # type: ignore
     rgb_image, depth_image = output.rgb[0], output.depth[0]  # type: ignore
     with NamedTemporaryFile(suffix=".png", delete=False, dir="tmp") as rgb_file:
