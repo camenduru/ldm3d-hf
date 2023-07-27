@@ -13,7 +13,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Device is {device}")
 torch_type = torch.float16 if device == "cuda" else torch.float32
 pipe = StableDiffusionLDM3DPipeline.from_pretrained(
-    "Intel/ldm3d-4c",
+    "Intel/ldm3d-pano",
     torch_dtype=torch_type
     # , safety_checker=None
 )
@@ -56,7 +56,7 @@ def predict(
         negative_prompt=negative_prompt,
         guidance_scale=guidance_scale,
         generator=generator,
-        num_inference_steps=50,
+        num_inference_steps=100,
     )  # type: ignore
     rgb_image, depth_image = output.rgb[0], output.depth[0]  # type: ignore
     with NamedTemporaryFile(suffix=".png", delete=False, dir="tmp") as rgb_file:
