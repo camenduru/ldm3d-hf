@@ -13,7 +13,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Device is {device}")
 torch_type = torch.float16 if device == "cuda" else torch.float32
 pipe = StableDiffusionLDM3DPipeline.from_pretrained(
-    "Intel/ldm3d-4c",
+    "Intel/ldm3d-pano",
     torch_dtype=torch_type
     # , safety_checker=None
 )
@@ -75,7 +75,7 @@ with gr.Blocks() as block:
         """
 ## LDM3d Demo 
 
-Model card: https://huggingface.co/Intel/ldm3d<br>
+Model card: https://huggingface.co/Intel/ldm3d-pano<br>
 [Diffusers docs](https://huggingface.co/docs/diffusers/main/en/api/pipelines/stable_diffusion/ldm3d_diffusion)
 
 """
