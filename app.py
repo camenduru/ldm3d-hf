@@ -101,7 +101,7 @@ Model card: https://huggingface.co/Intel/ldm3d-pano<br>
                 depth = gr.Image(label="Depth Image", type="filepath")
     gr.Examples(
         examples=[
-            ["A picture of some lemons on a table panoramic view", "", 5.0, 0, True]],
+            ["360 view of a large bedroom", "", 7.0, 0, True]],
         inputs=[prompt, negative_prompt, guidance_scale, seed, randomize_seed],
         outputs=[rgb, depth, generated_seed, html],
         fn=predict,
