@@ -113,4 +113,4 @@ Model card: https://huggingface.co/Intel/ldm3d-pano<br>
         outputs=[rgb, depth, generated_seed, html],
     )
     
-block.launch()
+block.launch() 
