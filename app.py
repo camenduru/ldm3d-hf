@@ -75,8 +75,9 @@ with gr.Blocks() as block:
         """
 ## LDM3d Demo 
 
-Model card: https://huggingface.co/Intel/ldm3d-pano<br>
+[Model card](https://huggingface.co/Intel/ldm3d-pano<br>)
 [Diffusers docs](https://huggingface.co/docs/diffusers/main/en/api/pipelines/stable_diffusion/ldm3d_diffusion)
+For better results, specify "360 view of" or "panoramic view of" in the prompt
 
 """
     )
