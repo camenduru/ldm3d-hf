@@ -45,7 +45,6 @@ def predict(
     prompt: str,
     negative_prompt: str,
     guidance_scale: float = 5.0,
-    ddim_steps: int = 50,
     seed: int = 0,
     randomize_seed: bool = True,
 ):
@@ -56,7 +55,6 @@ def predict(
         height=512,
         negative_prompt=negative_prompt,
         guidance_scale=guidance_scale,
-        ddim_steps=ddim_steps,
         generator=generator,
         num_inference_steps=50,
     )  # type: ignore
@@ -88,9 +86,6 @@ Model card: https://huggingface.co/Intel/ldm3d-pano<br>
             negative_prompt = gr.Textbox(label="Negative Prompt")
             guidance_scale = gr.Slider(
                 label="Guidance Scale", minimum=0, maximum=10, step=0.1, value=5.0
-            )
-            ddim_steps = gr.Slider(
-                label="DDIM steps", minimum=0, maximum=200, step=1, value=50
             )
             randomize_seed = gr.Checkbox(label="Randomize Seed", value=True)
             seed = gr.Slider(label="Seed", minimum=0,
