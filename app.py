@@ -56,7 +56,7 @@ def predict(
         negative_prompt=negative_prompt,
         guidance_scale=guidance_scale,
         generator=generator,
-        num_inference_steps=100,
+        num_inference_steps=50,
     )  # type: ignore
     rgb_image, depth_image = output.rgb[0], output.depth[0]  # type: ignore
     with NamedTemporaryFile(suffix=".png", delete=False, dir="tmp") as rgb_file:
@@ -101,7 +101,7 @@ Model card: https://huggingface.co/Intel/ldm3d-pano<br>
                 depth = gr.Image(label="Depth Image", type="filepath")
     gr.Examples(
         examples=[
-            ["360 view of a large bedroom", "", 7.0, 0, True]],
+            ["360 view of a large bedroom", "", 7.0, 24, False]],
         inputs=[prompt, negative_prompt, guidance_scale, seed, randomize_seed],
         outputs=[rgb, depth, generated_seed, html],
         fn=predict,
