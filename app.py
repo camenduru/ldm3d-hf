@@ -114,4 +114,4 @@ For better results, specify "360 view of" or "panoramic view of" in the prompt
         outputs=[rgb, depth, generated_seed, html],
     )
     
-block.launch() 
+block.launch(share=True) 
